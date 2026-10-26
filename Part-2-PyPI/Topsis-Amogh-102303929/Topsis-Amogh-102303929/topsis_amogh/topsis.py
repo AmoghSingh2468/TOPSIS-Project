@@ -37,7 +37,10 @@ def main():
     if len(weights) != data.shape[1] or len(impacts) != data.shape[1]:
         error("Number of weights, impacts and columns must be equal")
 
-    weights = np.array(weights, dtype=float)
+    try:
+        weights = np.array(weights, dtype=float)
+    except ValueError:
+        error("Weights must be numbers separated by commas")
 
     for i in impacts:
         if i not in ["+", "-"]:
@@ -73,7 +76,7 @@ def main():
     score = s_minus / (s_plus + s_minus)
 
     df["Topsis Score"] = score
-    df["Rank"] = df["Topsis Score"].rank(ascending=False)
+    df["Rank"] = df["Topsis Score"].rank(ascending=False, method="min").astype(int)
 
     df.to_csv(output_file, index=False)
     print("Result saved to", output_file)
